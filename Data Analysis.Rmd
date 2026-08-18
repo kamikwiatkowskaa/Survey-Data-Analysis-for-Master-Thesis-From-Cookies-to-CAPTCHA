@@ -1,0 +1,84 @@
+---
+title: "Data Analysis"
+author: "AG35441 - Kamila Kwiatkowska (k25120717)"
+output: 
+  word_document: default
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE,
+  message = FALSE,
+  warning = FALSE,
+  fig.align = "center"
+  )
+
+options (scipen = 999)
+
+library(tidyverse)
+library(here)        
+library(janitor)     
+library(psych)       
+library(rstatix)     
+library(effectsize)  
+library(car)         
+library(lmtest)      
+library(broom)
+library(sandwich)  
+library(ordinal)   
+library(brant) 
+
+```
+
+```{r read-in-data}
+
+survey_data <- read.csv("data/Analysis.csv")
+
+dat <- survey_data |> 
+  
+clean_names() |>
+  rename(
+    awareness             = total_awareness_score,
+    behaviour             = average_behaviour,
+    perceived_control     = s3q1,
+    value_recognition     = s3q2,
+    platform_transparency = s3q3,
+    trust                 = trust_score,
+    regulation            = average_regulation_score,
+    age                   = age_recoded,
+    gender                = gender_recoded,
+    education             = education_recoded,
+    screen_time           = screen_time_recoded
+  ) |>
+
+mutate(
+    age_band    = factor(age, levels = 1:5,
+                         labels = c("18-24", "25-34", "35-44", "45-54", "55+"),
+                         ordered = TRUE),
+    
+    edu_band    = factor(education, levels = 1:3,
+                         labels = c("Secondary", "Undergraduate", "Postgraduate"),
+                         ordered = TRUE),
+    
+    screen_band = factor(screen_time, levels = 1:4,
+                         labels = c("<1h", "1-3h", "4-5h", ">5h"),
+                         ordered = TRUE),
+    
+    gender_f    = factor(gender, levels = c(0, 1), 
+                         labels = c("Male", "Female"))
+    
+  ) 
+
+glimpse(dat)
+cat("\nN =", nrow(dat), "\n")
+    
+```
+
+```{r read-in-check}
+dat |> tabyl(age_band)
+dat |> tabyl(edu_band)
+dat |> tabyl(screen_band)
+dat |> tabyl(gender_f)
+```
