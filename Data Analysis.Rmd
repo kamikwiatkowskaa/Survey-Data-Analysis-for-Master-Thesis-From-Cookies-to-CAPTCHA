@@ -2,9 +2,9 @@
 title: "Data Analysis"
 author: "AG35441 - Kamila Kwiatkowska (k25120717)"
 output: 
-  pdf_document: default
-  html_document: default
   word_document: default
+  html_document: default
+  pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -269,5 +269,312 @@ lmtest::coeftest(m_value, vcov = sandwich::vcovHC(m_value, type = "HC3"))
 reg_ord <- MASS::polr(factor(s4q1) ~ awareness + age + gender + education + screen_time,
                       data = dat, Hess = TRUE)
 summary(reg_ord)
+
+```
+
+# Visualizations
+
+```{r plot-theme}
+
+library(scales)
+
+theme_set(
+  theme_minimal(base_size = 12) +
+    theme(
+      plot.title    = element_text(hjust = 0.5, face = "bold", size = 14),
+      plot.subtitle = element_text(hjust = 0.5),
+      plot.margin   = margin(10, 15, 10, 10),
+      strip.text    = element_text(face = "bold")
+    )
+)
+
+fill_main <- "#2C6E8F"   
+accent    <- "#B4460E"   
+
+```
+
+## Knowledge item difficulty
+
+```{r knowledge-difficulty}
+
+tibble::tibble(
+  item = factor(
+    c("Q1 Cookie consent", "Q2 App deletion", "Q3 CAPTCHA/AI",
+      "Q4 Reject breaks site", "Q5 Third-party sharing", "Q6 Incognito"),
+    levels = rev(c("Q1 Cookie consent", "Q2 App deletion", "Q3 CAPTCHA/AI",
+                   "Q4 Reject breaks site", "Q5 Third-party sharing", "Q6 Incognito"))
+  ),
+  
+  correct = colMeans(dat |> select(s1q1_recoded:s1q6_recoded))
+) |>
+  
+  ggplot(aes(item, correct)) +
+  geom_col(fill = fill_main) +
+  geom_text(aes(label = scales::percent(correct, accuracy = 1)), hjust = -0.15, size = 3.5) +
+  coord_flip(ylim = c(0, 1)) +
+  labs(x = NULL, 
+       y = "Proportion correct", 
+       title = "Awareness by knowledge item")
+
+```
+
+## Composite distributions
+
+```{r fig-distributions}
+
+dat |>
+  select(awareness, behaviour, perceived_control, value_recognition,
+         platform_transparency, trust, regulation) |>
+  pivot_longer(everything(), names_to = "measure", values_to = "score") |>
+  ggplot(aes(score)) +
+  geom_histogram(bins = 12, fill = fill_main) +
+  facet_wrap(~ measure, scales = "free") +
+  labs(x = "Score", 
+       y = "Count", 
+       title = "Distribution of composite measures")
+
+```
+
+## Value recognition
+
+```{r fig-value}
+
+dat |>
+  count(value_recognition) |>
+  
+  ggplot(aes(factor(value_recognition), n, fill = factor(value_recognition))) +
+  
+  geom_col() +
+  
+  scale_fill_brewer(palette = "Blues") +
+  
+  labs(x = "Value recognition (1 = not at all, 5 = a great deal)",
+       y = "Respondents", 
+       title = "Recognition of value generation") +
+  
+  theme(legend.position = "none")
+
+```
+
+## Scatterplot: Awareness and behaviour
+
+```{r fig-h1}
+
+ggplot(dat, aes(awareness, behaviour)) +
+  
+  geom_jitter(width = 0.15, height = 0.05, alpha = 0.5, colour = "#4C4C4C") +
+  
+  geom_smooth(method = "lm", 
+              se = TRUE, 
+              colour = accent, 
+              fill = accent, 
+              alpha = 0.15) +
+  
+  labs(x = "Awareness score (0-6)", 
+       y = "Protective behaviour (1-5)",
+       title = "Awareness and protective behaviour")
+
+```
+
+## Scatterplot: Value recognition and perceived control
+
+```{r fig-h5-control}
+
+ggplot(dat, aes(value_recognition, perceived_control)) +
+  
+  geom_jitter(width = 0.1, 
+              height = 0.1, 
+              alpha = 0.5, 
+              colour = "#4C4C4C") +
+  
+  geom_smooth(method = "lm", 
+              se = TRUE, 
+              colour = accent, 
+              fill = accent, 
+              alpha = 0.15) +
+  
+  labs(x = "Value recognition (1-5)", 
+       y = "Perceived control (1-5)",
+       title = "Value recognition and perceived control")
+
+```
+
+## Scatterplot: Value recognition and regulation
+
+```{r fig-h5-reg}
+
+ggplot(dat, aes(value_recognition, regulation)) +
+  
+  geom_jitter(width = 0.1, 
+              height = 0.05, 
+              alpha = 0.5, 
+              colour = "#4C4C4C") +
+  
+  geom_smooth(method = "lm", 
+              se = TRUE, 
+              colour = accent, 
+              fill = accent, 
+              alpha = 0.15) +
+  
+  labs(x = "Value recognition (1-5)", 
+       y = "Support for regulation (1-5)",
+       title = "Value recognition and support for regulation")
+
+```
+
+## Scatterplot: Behaviour and regulation
+
+```{r fig-beh-reg}
+
+ggplot(dat, aes(behaviour, regulation)) +
+  
+  geom_jitter(width = 0.05, 
+              height = 0.05, 
+              alpha = 0.5, 
+              colour = "#4C4C4C") +
+  
+  geom_smooth(method = "lm", 
+              se = TRUE, 
+              colour = accent, 
+              fill = accent, 
+              alpha = 0.15) +
+  
+  labs(x = "Protective behaviour (1-5)", 
+       y = "Support for regulation (1-5)",
+       title = "Protective behaviour and support for regulation")
+
+```
+
+## Boxplot: Age effects
+
+```{r fig-age}
+
+dat |>
+  select(age_band, awareness, behaviour, regulation) |>
+  
+  pivot_longer(-age_band, names_to = "measure", values_to = "score") |>
+  
+  ggplot(aes(age_band, score, fill = age_band)) +
+  
+  geom_boxplot(alpha = 0.85) +
+  
+  facet_wrap(~ measure, scales = "free_y") +
+  
+  scale_fill_brewer(palette = "Blues") +
+  
+  labs(x = "Age", 
+       y = "Score", 
+       title = "Outcomes by age band") +
+  
+  theme(axis.text.x = element_text(angle = 45, hjust = 1), legend.position = "none")
+
+```
+
+## Boxplot: Regulation by education
+
+```{r fig-edu-reg}
+
+ggplot(dat, aes(edu_band, regulation, fill = edu_band)) +
+  
+  geom_boxplot(alpha = 0.85) +
+  
+  scale_fill_brewer(palette = "Greens") +
+  
+  labs(x = "Education", 
+       y = "Support for regulation (1-5)",
+       title = "Support for regulation by education") +
+  
+  theme(legend.position = "none")
+
+```
+
+## Correlation heatmap
+
+```{r fig-heatmap}
+
+m <- dat |>
+  select(awareness, behaviour, perceived_control, value_recognition,
+         platform_transparency, trust, regulation) |>
+  
+  cor(method = "spearman")
+
+as.data.frame(as.table(m)) |>
+  ggplot(aes(Var1, Var2, fill = Freq)) +
+  
+  geom_tile(colour = "white") +
+  
+  geom_text(aes(label = round(Freq, 2)), size = 3) +
+  
+  scale_fill_gradient2(low = "#B2182B", mid = "white", high = "#2166AC",
+                       limits = c(-1, 1), name = "rho") +
+  labs(x = NULL, 
+       y = NULL, 
+       title = "Spearman correlations") +
+  
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+## Coefficient forest plot
+
+```{r fig-coef}
+
+models <- list(Behaviour = m_behaviour, Trust = m_trust,
+               Regulation = m_regulation, Value = m_value)
+
+purrr::map_dfr(models, function(m) {
+  sp <- effectsize::standardize_parameters(m)
+  tibble::tibble(term = sp$Parameter, beta = sp$Std_Coefficient,
+                 low = sp$CI_low, high = sp$CI_high)
+  
+}, .id = "model") |>
+  filter(term != "(Intercept)") |>
+  
+  ggplot(aes(beta, term, colour = model)) +
+  
+  geom_vline(xintercept = 0, linetype = "dashed", colour = "grey50") +
+  
+  geom_pointrange(aes(xmin = low, xmax = high)) +
+  
+  facet_wrap(~ model) +
+  
+  scale_colour_brewer(palette = "Set2") +
+  
+  labs(x = "Standardised coefficient (95% CI)", 
+       y = NULL,
+       title = "Predictors across the four models") +
+  
+  theme(legend.position = "none")
+
+```
+
+## Awareness effect across outcomes
+
+```{r fig-awareness-effect}
+
+models <- list(Behaviour = m_behaviour, Trust = m_trust,
+               Regulation = m_regulation, Value = m_value)
+
+purrr::map_dfr(models, function(m) {
+  sp <- effectsize::standardize_parameters(m)
+  tibble::tibble(term = sp$Parameter, beta = sp$Std_Coefficient,
+                 low = sp$CI_low, high = sp$CI_high)
+  
+}, .id = "model") |>
+  
+  filter(term == "awareness") |>
+  
+  ggplot(aes(beta, model, colour = model)) +
+  
+  geom_vline(xintercept = 0, linetype = "dashed", colour = "grey50") +
+  
+  geom_pointrange(aes(xmin = low, xmax = high)) +
+  
+  scale_colour_brewer(palette = "Set2") +
+  
+  labs(x = "Standardised awareness coefficient (95% CI)", 
+       y = NULL,
+       title = "Effect of awareness on each outcome") +
+  
+  theme(legend.position = "none")
 
 ```
