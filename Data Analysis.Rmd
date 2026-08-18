@@ -2,9 +2,9 @@
 title: "Data Analysis"
 author: "AG35441 - Kamila Kwiatkowska (k25120717)"
 output: 
-  word_document: default
-  html_document: default
   pdf_document: default
+  html_document: default
+  word_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -81,4 +81,53 @@ dat |> tabyl(age_band)
 dat |> tabyl(edu_band)
 dat |> tabyl(screen_band)
 dat |> tabyl(gender_f)
+```
+#Survey
+This is a test analysis of a dataset on 
+
+#Hypotheses
+
+##Hypothesis 1
+H1 Greater awareness of data extraction is not associated with greater privacy-protective behaviour.
+
+##Hypothesis 2
+H2 Greater awareness of data extraction is associated with lower platform trust.
+
+##Hypothesis 3
+H3 Greater awareness of data extraction is associated with stronger support for regulation.
+
+##Hypothesis 4
+H4 Users recognise their everyday online activity as a source of economic value for platforms.
+
+##Hypothesis 5
+H5 Stronger value recognition is associated with lower perceived control, lower platform trust, and stronger support for regulation.
+
+
+#Descriptive statistics
+```{r descriptives}
+
+dat |>
+  select(awareness, behaviour, perceived_control, value_recognition,
+         platform_transparency, trust, regulation) |>
+  psych::describe() |>
+  round (2)
+  
+```
+
+```{r normality}
+
+dat |>
+  select(awareness, behaviour, perceived_control, value_recognition,
+         platform_transparency, trust, regulation) |>
+  lapply(shapiro.test)
+
+```
+
+```{r knowledge-items}
+
+dat |>
+  select(s1q1_recoded:s1q6_recoded) |>
+  colMeans() |>
+  round(2)
+
 ```
