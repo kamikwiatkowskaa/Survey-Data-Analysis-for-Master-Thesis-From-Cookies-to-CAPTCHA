@@ -83,7 +83,7 @@ dat |> tabyl(screen_band)
 dat |> tabyl(gender_f)
 ```
 #Survey
-This is a test analysis of a dataset on 
+This is a test analysis of a dataset on Everyday Users' Perceptions of Data Use and Value Creation in the Hidden Value Chains of the Data Economy.
 
 #Hypotheses
 
@@ -114,6 +114,7 @@ dat |>
   
 ```
 
+#Normality check
 ```{r normality}
 
 dat |>
@@ -123,11 +124,150 @@ dat |>
 
 ```
 
+#Knowledge-tems check
 ```{r knowledge-items}
 
 dat |>
   select(s1q1_recoded:s1q6_recoded) |>
   colMeans() |>
   round(2)
+
+```
+
+#Reliability
+```{r reliability}
+
+kr20      <- psych::alpha(dat |> 
+                          select(s1q1_recoded:s1q6_recoded), 
+                          check.keys = FALSE)
+
+beh_alpha <- psych::alpha(dat |> 
+                          select(s2q1:s2q5), 
+                          check.keys = FALSE)
+
+reg_alpha <- psych::alpha(dat |> 
+                          select(s4q1:s4q3), 
+                          check.keys = FALSE)
+
+r_trust  <- cor(dat$perceived_control, dat$platform_transparency, use = "complete.obs")
+sb_trust <- (2 * r_trust) / (1 + r_trust)
+
+tibble::tibble(
+  Scale       = c("Awareness (6)", "Behaviour (5)", "Regulation (3)", "Trust (2)"),
+  Coefficient = c("KR-20", "Cronbach alpha", "Cronbach alpha", "Spearman-Brown"),
+  Value       = round(c(kr20$total$raw_alpha, beh_alpha$total$raw_alpha,
+                        reg_alpha$total$raw_alpha, sb_trust), 2)
+  )
+
+```
+
+#Correlations
+```{r correlations}
+
+corr_vars <- dat |>
+  select(awareness, behaviour, perceived_control, value_recognition,
+         platform_transparency, trust, regulation)
+
+sp <- psych::corr.test(corr_vars, method = "spearman")
+
+round(sp$r, 2)   
+round(sp$p, 3)   
+
+```
+
+#Group Comparisons
+```{r group-comparisons}
+
+outcomes <- c("awareness", "behaviour", "trust", "regulation", "value_recognition")
+
+sapply(outcomes, function(v) wilcox.test(dat[[v]] ~ dat$gender_f)$p.value) |> round(3)
+
+sapply(outcomes, function(v) kruskal.test(dat[[v]] ~ dat$age_band)$p.value)    |> round(3)
+sapply(outcomes, function(v) kruskal.test(dat[[v]] ~ dat$edu_band)$p.value)    |> round(3)
+sapply(outcomes, function(v) kruskal.test(dat[[v]] ~ dat$screen_band)$p.value) |> round(3)
+
+```
+
+```{r dunn-age}
+
+dat |> rstatix::dunn_test(awareness ~ age_band)  |> filter(p.adj < 0.05)
+dat |> rstatix::dunn_test(behaviour ~ age_band)  |> filter(p.adj < 0.05)
+dat |> rstatix::dunn_test(regulation ~ age_band) |> filter(p.adj < 0.05)
+
+print(dat |> rstatix::dunn_test(awareness ~ age_band)  |> filter(p.adj < 0.05))
+print(dat |> rstatix::dunn_test(behaviour ~ age_band)  |> filter(p.adj < 0.05))
+print(dat |> rstatix::dunn_test(regulation ~ age_band) |> filter(p.adj < 0.05))
+
+```
+
+#Regressions
+```{r regression}
+
+f <- ~ awareness + age + gender + education + screen_time
+
+m_behaviour  <- lm(update(f, behaviour ~ .),         data = dat)
+m_trust      <- lm(update(f, trust ~ .),             data = dat)
+m_regulation <- lm(update(f, regulation ~ .),        data = dat)
+m_value      <- lm(update(f, value_recognition ~ .), data = dat)
+
+lapply(list(behaviour = m_behaviour, trust = m_trust,
+            regulation = m_regulation, value = m_value),
+       function(m) list(
+         betas = effectsize::standardize_parameters(m),
+         fit   = broom::glance(m)[c("r.squared","adj.r.squared","statistic","p.value")],
+         vif   = car::vif(m)
+       ))
+
+```
+
+```{r model-fit}
+
+models <- list(behaviour = m_behaviour, trust = m_trust,
+               regulation = m_regulation, value = m_value)
+
+purrr::map_dfr(models, broom::glance, .id = "model") |>
+  select(model, r.squared, adj.r.squared, statistic, p.value) |>
+  mutate(across(where(is.numeric), ~ round(.x, 3)))
+
+```
+
+```{r control-model}
+
+m_control <- lm(perceived_control ~ value_recognition + awareness +
+                  age + gender + education + screen_time, data = dat)
+
+effectsize::standardize_parameters(m_control)
+broom::glance(m_control)[c("r.squared","adj.r.squared","statistic","p.value")]
+
+```
+
+#Diagnostic
+```{r diagnostics}
+
+lapply(list(m_behaviour, m_trust, m_regulation, m_value),
+       function(m) shapiro.test(residuals(m))$p.value)
+
+lapply(list(m_behaviour, m_trust, m_regulation, m_value), lmtest::bptest)
+
+which(cooks.distance(m_behaviour) > 4 / nrow(dat))
+
+```
+
+```{r influence-check}
+
+infl <- c(5, 40, 52, 53, 65, 79, 81, 120)
+m_beh_no_infl <- lm(update(f, behaviour ~ .), data = dat[-infl, ])
+effectsize::standardize_parameters(m_beh_no_infl)
+
+```
+
+#Robustness
+```{r robustness}
+
+lmtest::coeftest(m_value, vcov = sandwich::vcovHC(m_value, type = "HC3"))
+
+reg_ord <- MASS::polr(factor(s4q1) ~ awareness + age + gender + education + screen_time,
+                      data = dat, Hess = TRUE)
+summary(reg_ord)
 
 ```
