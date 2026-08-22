@@ -293,6 +293,32 @@ accent    <- "#B4460E"
 
 ```
 
+## Age
+```{r fig-violin-age}
+
+dat |>
+  select(age_band, awareness, behaviour, regulation) |>
+  
+  pivot_longer(-age_band, names_to = "measure", values_to = "score") |>
+  
+  ggplot(aes(age_band, score, fill = age_band)) +
+  
+  geom_violin(alpha = 0.6, colour = NA) +
+  
+  geom_boxplot(width = 0.15, fill = "white", outlier.size = 0.6) +
+  
+  facet_wrap(~ measure, scales = "free_y") +
+  
+  scale_fill_brewer(palette = "Blues") +
+  
+  labs(x = "Age", 
+       y = "Score", 
+       title = "Distribution of outcomes by Age") +
+  
+  theme(axis.text.x = element_text(angle = 45, hjust = 1), legend.position = "none")
+
+```
+
 ## Knowledge item difficulty
 
 ```{r knowledge-difficulty}
@@ -314,7 +340,52 @@ tibble::tibble(
   coord_flip(ylim = c(0, 1)) +
   labs(x = NULL, 
        y = "Proportion correct", 
-       title = "Awareness by knowledge item")
+       title = "Awareness by Knowledge Item")
+
+```
+
+```{r fig-knowledge-stack}
+
+key <- c(s1q1 = "TRUE", s1q2 = "FALSE", s1q3 = "TRUE",
+         s1q4 = "FALSE", s1q5 = "TRUE", s1q6 = "FALSE")
+
+labels <- c(s1q1 = "Q1 Cookie consent", s1q2 = "Q2 App deletion",
+            s1q3 = "Q3 CAPTCHA/AI", s1q4 = "Q4 Reject breaks site",
+            s1q5 = "Q5 Third-party sharing", s1q6 = "Q6 Incognito")
+
+dat |>
+  select(s1q1:s1q6) |>
+  
+  pivot_longer(everything(), names_to = "item", values_to = "answer") |>
+  
+  mutate(
+    answer = toupper(trimws(as.character(answer))),
+    outcome = case_when(
+      answer %in% c("TRUE", "FALSE") & answer == toupper(key[item]) ~ "Correct",
+      answer %in% c("TRUE", "FALSE") & answer != toupper(key[item]) ~ "Incorrect",
+      TRUE ~ "Not sure"
+    ),
+    
+    item = factor(labels[item], levels = rev(labels)),
+    
+    outcome = factor(outcome, levels = c("Correct", "Not sure", "Incorrect"))
+    
+  ) |>
+  count(item, outcome) |>
+  group_by(item) |>
+  mutate(prop = n / sum(n)) |>
+  ggplot(aes(prop, item, fill = outcome)) +
+  geom_col() +
+  
+  scale_x_continuous(labels = scales::percent) +
+  
+  scale_fill_manual(values = c(Correct = "#2C6E8F", 
+                               `Not sure` = "#C9C9C9",
+                               Incorrect = "#B4460E")) +
+  
+  labs(x = "Proportion of respondents", 
+       y = NULL, fill = NULL,
+       title = "Knowledge Item Responses")
 
 ```
 
@@ -348,12 +419,25 @@ dat |>
   
   scale_fill_brewer(palette = "Blues") +
   
-  labs(x = "Value recognition (1 = not at all, 5 = a great deal)",
+  labs(x = "Value recognition",
        y = "Respondents", 
-       title = "Recognition of value generation") +
+       title = "Recognition of Value Generation") +
   
   theme(legend.position = "none")
 
+```
+
+```{r fig-value-by-edu}
+dat |>
+  count(edu_band, value_recognition) |>
+  group_by(edu_band) |>
+  mutate(prop = n / sum(n)) |>
+  ggplot(aes(edu_band, prop, fill = factor(value_recognition))) +
+  geom_col() +
+  scale_y_continuous(labels = scales::percent) +
+  scale_fill_brewer(palette = "Blues", name = "Value recognition") +
+  labs(x = "Education", y = "Proportion of respondents",
+       title = "Value Recognition by Education")
 ```
 
 ## Scatterplot: Awareness and behaviour
@@ -366,13 +450,18 @@ ggplot(dat, aes(awareness, behaviour)) +
   
   geom_smooth(method = "lm", 
               se = TRUE, 
-              colour = accent, 
-              fill = accent, 
+              colour = fill_main, 
+              fill = fill_main, 
               alpha = 0.15) +
   
-  labs(x = "Awareness score (0-6)", 
-       y = "Protective behaviour (1-5)",
-       title = "Awareness and protective behaviour")
+  scale_x_continuous(limits = c(0, 6), breaks = 0:6) +
+  
+  scale_y_continuous(limits = c(1, 5), breaks = 1:5) +
+  
+  
+  labs(x = "Awareness score", 
+       y = "Protective behaviour",
+       title = "Awareness and Protective Behaviour")
 
 ```
 
@@ -389,13 +478,13 @@ ggplot(dat, aes(value_recognition, perceived_control)) +
   
   geom_smooth(method = "lm", 
               se = TRUE, 
-              colour = accent, 
-              fill = accent, 
+              colour = fill_main, 
+              fill = fill_main, 
               alpha = 0.15) +
   
-  labs(x = "Value recognition (1-5)", 
-       y = "Perceived control (1-5)",
-       title = "Value recognition and perceived control")
+  labs(x = "Value Recognition", 
+       y = "Perceived Control",
+       title = "Value Recognition and Perceived Control")
 
 ```
 
@@ -412,13 +501,13 @@ ggplot(dat, aes(value_recognition, regulation)) +
   
   geom_smooth(method = "lm", 
               se = TRUE, 
-              colour = accent, 
-              fill = accent, 
+              colour = fill_main, 
+              fill = fill_main, 
               alpha = 0.15) +
   
-  labs(x = "Value recognition (1-5)", 
-       y = "Support for regulation (1-5)",
-       title = "Value recognition and support for regulation")
+  labs(x = "Value recognition", 
+       y = "Support for regulation",
+       title = "Value Recognition and Support for Regulation")
 
 ```
 
@@ -464,7 +553,7 @@ dat |>
   
   labs(x = "Age", 
        y = "Score", 
-       title = "Outcomes by age band") +
+       title = "Outcomes by Age") +
   
   theme(axis.text.x = element_text(angle = 45, hjust = 1), legend.position = "none")
 
@@ -478,11 +567,11 @@ ggplot(dat, aes(edu_band, regulation, fill = edu_band)) +
   
   geom_boxplot(alpha = 0.85) +
   
-  scale_fill_brewer(palette = "Greens") +
+  scale_fill_brewer(palette = "Blues") +
   
   labs(x = "Education", 
-       y = "Support for regulation (1-5)",
-       title = "Support for regulation by education") +
+       y = "Support for regulation",
+       title = "Support for Regulation by Education") +
   
   theme(legend.position = "none")
 
