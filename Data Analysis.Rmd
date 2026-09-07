@@ -1,6 +1,6 @@
 ---
 title: "Data Analysis"
-author: "AG35441 - Kamila Kwiatkowska (k25120717)"
+author: "AG35441"
 output: 
   word_document: default
   html_document: default

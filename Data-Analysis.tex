@@ -1,0 +1,393 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+\documentclass[
+]{article}
+\usepackage{xcolor}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\usepackage{graphicx}
+\makeatletter
+\newsavebox\pandoc@box
+\newcommand*\pandocbounded[1]{% scales image to fit in text height/width
+  \sbox\pandoc@box{#1}%
+  \Gscale@div\@tempa{\textheight}{\dimexpr\ht\pandoc@box+\dp\pandoc@box\relax}%
+  \Gscale@div\@tempb{\linewidth}{\wd\pandoc@box}%
+  \ifdim\@tempb\p@<\@tempa\p@\let\@tempa\@tempb\fi% select the smaller of both
+  \ifdim\@tempa\p@<\p@\scalebox{\@tempa}{\usebox\pandoc@box}%
+  \else\usebox{\pandoc@box}%
+  \fi%
+}
+% Set default figure placement to htbp
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\usepackage{bookmark}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+\hypersetup{
+  pdftitle={Data Analysis},
+  pdfauthor={AG35441 - Kamila Kwiatkowska (k25120717)},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+
+\title{Data Analysis}
+\author{AG35441 - Kamila Kwiatkowska (k25120717)}
+\date{}
+
+\begin{document}
+\maketitle
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{survey\_data }\OtherTok{\textless{}{-}} \FunctionTok{read.csv}\NormalTok{(}\StringTok{"data/Analysis.csv"}\NormalTok{)}
+
+\NormalTok{dat }\OtherTok{\textless{}{-}}\NormalTok{ survey\_data }\SpecialCharTok{|\textgreater{}} 
+  
+\FunctionTok{clean\_names}\NormalTok{() }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{rename}\NormalTok{(}
+    \AttributeTok{awareness             =}\NormalTok{ total\_awareness\_score,}
+    \AttributeTok{behaviour             =}\NormalTok{ average\_behaviour,}
+    \AttributeTok{perceived\_control     =}\NormalTok{ s3q1,}
+    \AttributeTok{value\_recognition     =}\NormalTok{ s3q2,}
+    \AttributeTok{platform\_transparency =}\NormalTok{ s3q3,}
+    \AttributeTok{trust                 =}\NormalTok{ trust\_score,}
+    \AttributeTok{regulation            =}\NormalTok{ average\_regulation\_score,}
+    \AttributeTok{age                   =}\NormalTok{ age\_recoded,}
+    \AttributeTok{gender                =}\NormalTok{ gender\_recoded,}
+    \AttributeTok{education             =}\NormalTok{ education\_recoded,}
+    \AttributeTok{screen\_time           =}\NormalTok{ screen\_time\_recoded}
+\NormalTok{  ) }\SpecialCharTok{|\textgreater{}}
+
+\FunctionTok{mutate}\NormalTok{(}
+    \AttributeTok{age\_band    =} \FunctionTok{factor}\NormalTok{(age, }\AttributeTok{levels =} \DecValTok{1}\SpecialCharTok{:}\DecValTok{5}\NormalTok{,}
+                         \AttributeTok{labels =} \FunctionTok{c}\NormalTok{(}\StringTok{"18{-}24"}\NormalTok{, }\StringTok{"25{-}34"}\NormalTok{, }\StringTok{"35{-}44"}\NormalTok{, }\StringTok{"45{-}54"}\NormalTok{, }\StringTok{"55+"}\NormalTok{),}
+                         \AttributeTok{ordered =} \ConstantTok{TRUE}\NormalTok{),}
+    
+    \AttributeTok{edu\_band    =} \FunctionTok{factor}\NormalTok{(education, }\AttributeTok{levels =} \DecValTok{1}\SpecialCharTok{:}\DecValTok{3}\NormalTok{,}
+                         \AttributeTok{labels =} \FunctionTok{c}\NormalTok{(}\StringTok{"Secondary"}\NormalTok{, }\StringTok{"Undergraduate"}\NormalTok{, }\StringTok{"Postgraduate"}\NormalTok{),}
+                         \AttributeTok{ordered =} \ConstantTok{TRUE}\NormalTok{),}
+    
+    \AttributeTok{screen\_band =} \FunctionTok{factor}\NormalTok{(screen\_time, }\AttributeTok{levels =} \DecValTok{1}\SpecialCharTok{:}\DecValTok{4}\NormalTok{,}
+                         \AttributeTok{labels =} \FunctionTok{c}\NormalTok{(}\StringTok{"\textless{}1h"}\NormalTok{, }\StringTok{"1{-}3h"}\NormalTok{, }\StringTok{"4{-}5h"}\NormalTok{, }\StringTok{"\textgreater{}5h"}\NormalTok{),}
+                         \AttributeTok{ordered =} \ConstantTok{TRUE}\NormalTok{),}
+    
+    \AttributeTok{gender\_f    =} \FunctionTok{factor}\NormalTok{(gender, }\AttributeTok{levels =} \FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{1}\NormalTok{), }
+                         \AttributeTok{labels =} \FunctionTok{c}\NormalTok{(}\StringTok{"Male"}\NormalTok{, }\StringTok{"Female"}\NormalTok{))}
+    
+\NormalTok{  ) }
+
+\FunctionTok{glimpse}\NormalTok{(dat)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Rows: 120
+## Columns: 35
+## $ s1q1                  <chr> "TRUE", "TRUE", "FALSE", "TRUE", "TRUE", "TRUE",~
+## $ s1q2                  <chr> "FALSE", "FALSE", "FALSE", "Not Sure", "FALSE", ~
+## $ s1q3                  <chr> "Not Sure", "TRUE", "TRUE", "TRUE", "TRUE", "TRU~
+## $ s1q4                  <chr> "FALSE", "FALSE", "TRUE", "FALSE", "FALSE", "FAL~
+## $ s1q5                  <chr> "Not Sure", "TRUE", "FALSE", "FALSE", "TRUE", "T~
+## $ s1q6                  <chr> "Not Sure", "FALSE", "FALSE", "TRUE", "FALSE", "~
+## $ s1q1_recoded          <int> 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, ~
+## $ s1q2_recoded          <int> 1, 1, 1, 0, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 0, ~
+## $ s1q3_recoded          <int> 0, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, ~
+## $ s1q4_recoded          <int> 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, ~
+## $ s1q5_recoded          <int> 0, 1, 0, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 0, 0, ~
+## $ s1q6_recoded          <int> 0, 1, 1, 0, 1, 0, 1, 1, 0, 0, 1, 0, 0, 1, 1, 1, ~
+## $ awareness             <int> 3, 6, 3, 3, 6, 5, 5, 6, 2, 4, 6, 5, 5, 5, 4, 4, ~
+## $ s2q1                  <int> 2, 5, 4, 3, 4, 2, 4, 4, 2, 5, 1, 2, 2, 4, 5, 4, ~
+## $ s2q2                  <int> 1, 4, 3, 4, 4, 3, 4, 5, 3, 3, 5, 1, 2, 4, 4, 2, ~
+## $ s2q3                  <int> 1, 1, 2, 1, 4, 2, 4, 1, 3, 1, 1, 1, 1, 2, 2, 1, ~
+## $ s2q4                  <int> 2, 2, 3, 1, 4, 2, 2, 2, 3, 1, 1, 2, 1, 4, 3, 2, ~
+## $ s2q5                  <int> 4, 5, 4, 3, 4, 4, 4, 4, 3, 5, 3, 5, 2, 4, 4, 3, ~
+## $ behaviour             <dbl> 2.0, 3.4, 3.2, 2.4, 4.0, 2.6, 3.6, 3.2, 2.8, 3.0~
+## $ perceived_control     <int> 1, 4, 2, 2, 2, 1, 3, 2, 3, 1, 1, 2, 1, 1, 1, 1, ~
+## $ value_recognition     <int> 4, 4, 3, 4, 3, 5, 3, 4, 3, 5, 4, 5, 5, 4, 5, 4, ~
+## $ platform_transparency <int> 2, 2, 3, 2, 3, 2, 3, 3, 2, 2, 2, 2, 2, 2, 2, 1, ~
+## $ trust                 <dbl> 1.5, 3.0, 2.5, 2.0, 2.5, 1.5, 3.0, 2.5, 2.5, 1.5~
+## $ s4q1                  <int> 5, 4, 5, 3, 3, 5, 4, 5, 4, 5, 4, 5, 4, 5, 5, 4, ~
+## $ s4q2                  <int> 5, 5, 5, 4, 3, 5, 5, 4, 4, 5, 4, 5, 5, 5, 5, 4, ~
+## $ s4q3                  <int> 5, 5, 5, 2, 4, 5, 4, 4, 4, 5, 3, 4, 3, 5, 4, 5, ~
+## $ regulation            <dbl> 5.00, 4.67, 5.00, 3.00, 3.33, 5.00, 4.33, 4.33, ~
+## $ age                   <int> 5, 1, 1, 2, 1, 1, 1, 1, 4, 1, 1, 4, 1, 2, 1, 1, ~
+## $ gender                <int> 0, 0, 0, 1, 0, 1, 1, 0, 1, 1, 0, 1, 0, 0, 0, 0, ~
+## $ education             <int> 3, 3, 2, 3, 2, 3, 2, 3, 3, 3, 1, 3, 3, 3, 3, 2, ~
+## $ screen_time           <int> 2, 2, 2, 4, 1, 3, 2, 2, 2, 2, 1, 2, 2, 1, 2, 2, ~
+## $ age_band              <ord> 55+, 18-24, 18-24, 25-34, 18-24, 18-24, 18-24, 1~
+## $ edu_band              <ord> Postgraduate, Postgraduate, Undergraduate, Postg~
+## $ screen_band           <ord> 1-3h, 1-3h, 1-3h, >5h, <1h, 4-5h, 1-3h, 1-3h, 1-~
+## $ gender_f              <fct> Male, Male, Male, Female, Male, Female, Female, ~
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{cat}\NormalTok{(}\StringTok{"}\SpecialCharTok{\textbackslash{}n}\StringTok{N ="}\NormalTok{, }\FunctionTok{nrow}\NormalTok{(dat), }\StringTok{"}\SpecialCharTok{\textbackslash{}n}\StringTok{"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## N = 120
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{dat }\SpecialCharTok{|\textgreater{}} \FunctionTok{tabyl}\NormalTok{(age\_band)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##  age_band  n    percent
+##     18-24 49 0.40833333
+##     25-34 27 0.22500000
+##     35-44 24 0.20000000
+##     45-54 13 0.10833333
+##       55+  7 0.05833333
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{dat }\SpecialCharTok{|\textgreater{}} \FunctionTok{tabyl}\NormalTok{(edu\_band)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##       edu_band  n   percent
+##      Secondary 13 0.1083333
+##  Undergraduate 39 0.3250000
+##   Postgraduate 68 0.5666667
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{dat }\SpecialCharTok{|\textgreater{}} \FunctionTok{tabyl}\NormalTok{(screen\_band)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##  screen_band  n   percent
+##          <1h 13 0.1083333
+##         1-3h 62 0.5166667
+##         4-5h 26 0.2166667
+##          >5h 19 0.1583333
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{dat }\SpecialCharTok{|\textgreater{}} \FunctionTok{tabyl}\NormalTok{(gender\_f)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##  gender_f  n percent
+##      Male 57   0.475
+##    Female 63   0.525
+\end{verbatim}
+
+\#Survey This is a test analysis of a dataset on
+
+\#Hypotheses
+
+\#\#Hypothesis 1 H1 Greater awareness of data extraction is not
+associated with greater privacy-protective behaviour.
+
+\#\#Hypothesis 2 H2 Greater awareness of data extraction is associated
+with lower platform trust.
+
+\#\#Hypothesis 3 H3 Greater awareness of data extraction is associated
+with stronger support for regulation.
+
+\#\#Hypothesis 4 H4 Users recognise their everyday online activity as a
+source of economic value for platforms.
+
+\#\#Hypothesis 5 H5 Stronger value recognition is associated with lower
+perceived control, lower platform trust, and stronger support for
+regulation.
+
+\#Descriptive statistics
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{dat }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{select}\NormalTok{(awareness, behaviour, perceived\_control, value\_recognition,}
+\NormalTok{         platform\_transparency, trust, regulation) }\SpecialCharTok{|\textgreater{}}
+\NormalTok{  psych}\SpecialCharTok{::}\FunctionTok{describe}\NormalTok{() }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{round}\NormalTok{ (}\DecValTok{2}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##                       vars   n mean   sd median trimmed  mad min max range
+## awareness                1 120 4.42 1.39    5.0    4.55 1.48   0 6.0   6.0
+## behaviour                2 120 2.28 0.72    2.2    2.28 0.89   1 4.0   3.0
+## perceived_control        3 120 1.82 0.77    2.0    1.74 1.48   1 4.0   3.0
+## value_recognition        4 120 4.05 0.88    4.0    4.12 1.48   1 5.0   4.0
+## platform_transparency    5 120 2.03 0.71    2.0    2.03 0.00   1 4.0   3.0
+## trust                    6 120 1.93 0.59    2.0    1.92 0.74   1 3.5   2.5
+## regulation               7 120 4.00 0.84    4.0    4.09 0.99   1 5.0   4.0
+##                        skew kurtosis   se
+## awareness             -0.61    -0.25 0.13
+## behaviour              0.14    -0.81 0.07
+## perceived_control      0.65    -0.07 0.07
+## value_recognition     -0.69     0.11 0.08
+## platform_transparency  0.09    -0.66 0.06
+## trust                  0.20    -0.72 0.05
+## regulation            -0.81     0.57 0.08
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{dat }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{select}\NormalTok{(awareness, behaviour, perceived\_control, value\_recognition,}
+\NormalTok{         platform\_transparency, trust, regulation) }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{lapply}\NormalTok{(shapiro.test)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## $awareness
+## 
+##  Shapiro-Wilk normality test
+## 
+## data:  X[[i]]
+## W = 0.89442, p-value = 0.0000001028
+## 
+## 
+## $behaviour
+## 
+##  Shapiro-Wilk normality test
+## 
+## data:  X[[i]]
+## W = 0.96963, p-value = 0.008145
+## 
+## 
+## $perceived_control
+## 
+##  Shapiro-Wilk normality test
+## 
+## data:  X[[i]]
+## W = 0.81123, p-value = 0.00000000004124
+## 
+## 
+## $value_recognition
+## 
+##  Shapiro-Wilk normality test
+## 
+## data:  X[[i]]
+## W = 0.83873, p-value = 0.000000000404
+## 
+## 
+## $platform_transparency
+## 
+##  Shapiro-Wilk normality test
+## 
+## data:  X[[i]]
+## W = 0.82306, p-value = 0.0000000001069
+## 
+## 
+## $trust
+## 
+##  Shapiro-Wilk normality test
+## 
+## data:  X[[i]]
+## W = 0.91927, p-value = 0.000002184
+## 
+## 
+## $regulation
+## 
+##  Shapiro-Wilk normality test
+## 
+## data:  X[[i]]
+## W = 0.91549, p-value = 0.00000133
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{dat }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{select}\NormalTok{(s1q1\_recoded}\SpecialCharTok{:}\NormalTok{s1q6\_recoded) }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{colMeans}\NormalTok{() }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{round}\NormalTok{(}\DecValTok{2}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## s1q1_recoded s1q2_recoded s1q3_recoded s1q4_recoded s1q5_recoded s1q6_recoded 
+##         0.84         0.77         0.69         0.88         0.61         0.62
+\end{verbatim}
+
+\end{document}
